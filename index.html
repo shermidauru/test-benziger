@@ -271,7 +271,7 @@ function guardar(s,tot,perfil){
   fetch(url,{method:"GET",mode:"no-cors"})
   .then(function(){
     sv.className="sv2 ok";sv.textContent="✅ Resultados guardados en la base de datos.";
-  })
+  )
   .catch(function(){
     var img=new Image();img.src=url;
     sv.className="sv2 ok";sv.textContent="✅ Resultados enviados correctamente.";
@@ -279,6 +279,7 @@ function guardar(s,tot,perfil){
   setTimeout(function(){
     if(sv.className==="sv2"){sv.className="sv2 ok";sv.textContent="✅ Resultados enviados correctamente.";}
   },5000);
+}
 }
 function reiniciar(){
   actual=0;resp=new Array(20).fill(null);nombre="";apellido="";

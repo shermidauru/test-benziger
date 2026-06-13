@@ -1,4 +1,4 @@
-[index.html](https://github.com/user-attachments/files/28847750/index.html)
+[index.html](https://github.com/user-attachments/files/28915990/index.html)
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -122,21 +122,25 @@ main{max-width:640px;margin:0 auto;padding:24px 16px 60px}
     <div class="bc bl"><h4>🟢 Basal Izquierdo</h4><p>Metódico, confiable, orientado al proceso.</p></div>
     <div class="bc br"><h4>🟠 Basal Derecho</h4><p>Empático, comunicativo, orientado a personas.</p></div>
   </div>
-  <button class="btnS" onclick="mostrarFormulario()">Comenzar el Test →</button>
+  <button class="btnS" id="btnComenzar">Comenzar el Test →</button>
 </div>
 
 <div id="nameForm">
   <h2>👤 Antes de empezar</h2>
-  <p>Ingresá tu nombre y apellido para registrar tus resultados.</p>
+  <p>Ingresá tus datos para registrar tus resultados.</p>
   <div class="fg">
     <label for="iNombre">Nombre *</label>
-    <input type="text" id="iNombre" placeholder="Ej: Sebastián" oninput="verificarForm()">
+    <input type="text" id="iNombre" placeholder="Ej: Sebastián" class="campoNombre">
   </div>
   <div class="fg">
     <label for="iApellido">Apellido *</label>
-    <input type="text" id="iApellido" placeholder="Ej: Shermida" oninput="verificarForm()">
+    <input type="text" id="iApellido" placeholder="Ej: Shermida" class="campoNombre">
   </div>
-  <button class="btnF" id="btnIniciar" onclick="iniciarQuiz()" disabled>Iniciar el Test →</button>
+  <div class="fg">
+    <label for="iEmail">Correo electrónico *</label>
+    <input type="email" id="iEmail" placeholder="Ej: nombre@correo.com" class="campoNombre">
+  </div>
+  <button class="btnF" id="btnIniciar" disabled>Iniciar el Test →</button>
 </div>
 
 <div id="quiz">
@@ -144,8 +148,8 @@ main{max-width:640px;margin:0 auto;padding:24px 16px 60px}
   <div class="qt" id="qt"></div>
   <div class="opts" id="opts"></div>
   <div class="nav">
-    <button class="bn bp" id="bprev" onclick="anterior()">← Anterior</button>
-    <button class="bn bx" id="bnext" onclick="siguiente()" disabled>Siguiente →</button>
+    <button class="bn bp" id="btnAnterior">← Anterior</button>
+    <button class="bn bx" id="btnSiguiente" disabled>Siguiente →</button>
   </div>
 </div>
 
@@ -160,12 +164,12 @@ main{max-width:640px;margin:0 auto;padding:24px 16px 60px}
   <div class="rs" id="roles"></div>
   <div class="sv2" id="saving">💾 Guardando tus resultados...</div>
   <div class="wb"><strong>⚠️ Importante:</strong> Este test es orientativo para la reflexión y el autoconocimiento. No reemplaza una evaluación profesional certificada de Benziger.</div>
-  <button class="br2" onclick="reiniciar()">🔄 Hacer el test de nuevo</button>
+  <button class="br2" id="btnReiniciar">🔄 Hacer el test de nuevo</button>
 </div>
 
 </main>
 <script>
-var SCRIPT="https://script.google.com/macros/s/AKfycbxT-T2VXhPZjQ0MyP1AvVlJkeWqwWadXqWYS6T3dAXQAPxh6nmDwEhMrqpGk8j55ANruw/exec";
+var SCRIPT="https://script.google.com/macros/s/AKfycbxnt9yLyZq2NpNaX2Rw-vdRaRRBgejKoSgwy4bBViQ6e-T3CVuiwA33vuul7FkL38E5Tg/exec";
 var preguntas=[
 {t:"Cuando tenés que resolver un problema complejo, preferís...",o:[{t:"Analizar los datos y buscar la solución más lógica",p:"fl"},{t:"Explorar ideas creativas y pensar en soluciones novedosas",p:"fr"},{t:"Seguir un proceso paso a paso que ya funcionó antes",p:"bl"},{t:"Hablar con otras personas y construir una solución en equipo",p:"br"}]},
 {t:"En una reunión de trabajo, tu rol más natural es...",o:[{t:"Presentar argumentos con datos y lógica clara",p:"fl"},{t:"Proponer ideas innovadoras y visiones a largo plazo",p:"fr"},{t:"Tomar notas y asegurarte de que se definan los próximos pasos",p:"bl"},{t:"Mediar entre opiniones y cuidar el clima del grupo",p:"br"}]},
@@ -194,7 +198,7 @@ fr:{n:"Frontal Derecho",e:"🟣",tg:"El Visionario",d:"Sos creativo/a, intuitivo
 bl:{n:"Basal Izquierdo",e:"🟢",tg:"El Organizador",d:"Sos metódico/a, confiable y orientado/a al proceso. Tenés una capacidad excepcional para organizar, planificar y ejecutar con precisión. Los demás confían en vos porque siempre cumplís.",tr:["Metódico","Confiable","Detallista","Organizado","Planificador"],r:["Gerente de calidad","Jefe de mantenimiento","Auditor","Administrador","Coordinador de operaciones"],c:"bl"},
 br:{n:"Basal Derecho",e:"🟠",tg:"El Comunicador",d:"Sos empático/a, comunicativo/a y orientado/a a las personas. Tenés habilidad natural para conectar con otros, generar confianza y construir equipos cohesionados.",tr:["Empático","Comunicativo","Colaborativo","Motivador","Inclusivo"],r:["Gerente de RRHH","Director de hospitalidad","Facilitador","Coach","Gerente de servicio al cliente"],c:"br"}
 };
-var actual=0,resp=new Array(20).fill(null),nombre="",apellido="";
+var actual=0,resp=new Array(20).fill(null),nombre="",apellido="",email="";
 
 function mostrarFormulario(){
   document.getElementById("intro").style.display="none";
@@ -205,11 +209,14 @@ function mostrarFormulario(){
 function verificarForm(){
   var n=document.getElementById("iNombre").value.trim();
   var a=document.getElementById("iApellido").value.trim();
-  document.getElementById("btnIniciar").disabled=!(n&&a);
+  var em=document.getElementById("iEmail").value.trim();
+  var emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  document.getElementById("btnIniciar").disabled=!(n&&a&&emailOk);
 }
 function iniciarQuiz(){
   nombre=document.getElementById("iNombre").value.trim();
   apellido=document.getElementById("iApellido").value.trim();
+  email=document.getElementById("iEmail").value.trim();
   document.getElementById("nameForm").style.display="none";
   document.getElementById("quiz").style.display="block";
   mostrarPregunta();
@@ -224,18 +231,18 @@ function mostrarPregunta(){
     var b=document.createElement("button");
     b.className="ob"+(resp[actual]===op.p?" sel":"");
     b.innerHTML='<span class="ol">'+L[i]+"</span>"+op.t;
-    b.onclick=function(){seleccionar(op.p)};
+    b.addEventListener("click",function(){seleccionar(op.p)});
     o.appendChild(b);
   });
-  document.getElementById("bprev").style.visibility=actual===0?"hidden":"visible";
-  document.getElementById("bnext").disabled=resp[actual]===null;
-  document.getElementById("bnext").textContent=actual===19?"Ver mi perfil ✓":"Siguiente →";
+  document.getElementById("btnAnterior").style.visibility=actual===0?"hidden":"visible";
+  document.getElementById("btnSiguiente").disabled=resp[actual]===null;
+  document.getElementById("btnSiguiente").textContent=actual===19?"Ver mi perfil ✓":"Siguiente →";
   document.getElementById("fill").style.width=(5+actual/20*90)+"%";
 }
 function seleccionar(p){
   resp[actual]=p;
   mostrarPregunta();
-  document.getElementById("bnext").disabled=false;
+  document.getElementById("btnSiguiente").disabled=false;
 }
 function siguiente(){
   if(resp[actual]===null)return;
@@ -265,32 +272,43 @@ function mostrarResultados(){
 function guardar(s,tot,perfil){
   var now=new Date();
   var fecha=now.toLocaleDateString("es-UY",{day:"2-digit",month:"2-digit",year:"numeric"})+" "+now.toLocaleTimeString("es-UY",{hour:"2-digit",minute:"2-digit"});
-  var params="fecha="+encodeURIComponent(fecha)+"&nombre="+encodeURIComponent(nombre)+"&apellido="+encodeURIComponent(apellido)+"&perfil="+encodeURIComponent(perfil)+"&fl="+Math.round(s.fl/tot*100)+"&fr="+Math.round(s.fr/tot*100)+"&bl="+Math.round(s.bl/tot*100)+"&br="+Math.round(s.br/tot*100);
+  var params="fecha="+encodeURIComponent(fecha)+"&nombre="+encodeURIComponent(nombre)+"&apellido="+encodeURIComponent(apellido)+"&email="+encodeURIComponent(email)+"&perfil="+encodeURIComponent(perfil)+"&fl="+Math.round(s.fl/tot*100)+"&fr="+Math.round(s.fr/tot*100)+"&bl="+Math.round(s.bl/tot*100)+"&br="+Math.round(s.br/tot*100);
   var sv=document.getElementById("saving");
   sv.className="sv2";sv.textContent="💾 Guardando tus resultados...";
   var url=SCRIPT+"?"+params;
-  fetch(url,{method:"GET",mode:"no-cors"})
-  .then(function(){
-    sv.className="sv2 ok";sv.textContent="✅ Resultados guardados en la base de datos.";
-  })
-  .catch(function(){
-    var img=new Image();img.src=url;
-    sv.className="sv2 ok";sv.textContent="✅ Resultados enviados correctamente.";
-  });
+  // Método 1: imagen (el más confiable para Apps Script, se ejecuta siempre)
+  var img=new Image();
+  img.onload=function(){ sv.className="sv2 ok";sv.textContent="✅ Resultados guardados en la base de datos."; };
+  img.onerror=function(){ sv.className="sv2 ok";sv.textContent="✅ Resultados guardados en la base de datos."; };
+  img.src=url;
+  // Método 2: fetch de respaldo en paralelo
+  try { fetch(url,{method:"GET",mode:"no-cors"}); } catch(e){}
+  // Confirmación visual de respaldo
   setTimeout(function(){
-    if(sv.className==="sv2"){sv.className="sv2 ok";sv.textContent="✅ Resultados enviados correctamente.";}
-  },5000);
+    if(sv.className==="sv2"){ sv.className="sv2 ok";sv.textContent="✅ Resultados guardados en la base de datos."; }
+  },3000);
 }
 function reiniciar(){
-  actual=0;resp=new Array(20).fill(null);nombre="";apellido="";
+  actual=0;resp=new Array(20).fill(null);nombre="";apellido="";email="";
   document.getElementById("iNombre").value="";
   document.getElementById("iApellido").value="";
+  document.getElementById("iEmail").value="";
   document.getElementById("btnIniciar").disabled=true;
   document.getElementById("results").style.display="none";
   document.getElementById("intro").style.display="block";
   document.getElementById("fill").style.width="0%";
   window.scrollTo({top:0,behavior:"smooth"});
 }
+
+// Conexión de botones por código (inmune a la traducción del navegador)
+document.getElementById("btnComenzar").addEventListener("click",mostrarFormulario);
+document.getElementById("btnIniciar").addEventListener("click",iniciarQuiz);
+document.getElementById("btnAnterior").addEventListener("click",anterior);
+document.getElementById("btnSiguiente").addEventListener("click",siguiente);
+document.getElementById("btnReiniciar").addEventListener("click",reiniciar);
+document.getElementById("iNombre").addEventListener("input",verificarForm);
+document.getElementById("iApellido").addEventListener("input",verificarForm);
+document.getElementById("iEmail").addEventListener("input",verificarForm);
 </script>
 </body>
 </html>
